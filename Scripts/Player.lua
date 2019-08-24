@@ -4,7 +4,7 @@ Player.__index = Player
 function Player.new()	
 	local player = {
 		position = {x = 380, y = 280, x_speed = 0, y_speed = 0},
-		height = 80,
+		height = 40,
 		width = 30,
 		sprite_border = 5,
 		skills = {},
@@ -26,7 +26,7 @@ function Player.new()
 	}
 		
 	for i = 1,20 do
-		player.sprite.quads[i] = love.graphics.newQuad(40*(i-1),0,40,80,800,80)
+		player.sprite.quads[i] = love.graphics.newQuad(40*(i-1),0,40,40,800,80)
 	end
 		
 	setmetatable(player, Player)
@@ -109,20 +109,20 @@ function Player:check_collision(dt)
 	local min_x = math.floor((self.position.x+5)/20) + 1
 	local max_x = math.ceil((self.position.x-5)/20) + 2
 	local min_y = math.floor((self.position.y+5)/20) + 1
-	local max_y = math.ceil((self.position.y)/20) + 4
+	local max_y = math.ceil((self.position.y)/20) + 2
 	local next_min_y = math.floor((self.next_coord.y+5)/20) + 1
-	local next_max_y = math.ceil((self.next_coord.y)/20) + 4
+	local next_max_y = math.ceil((self.next_coord.y)/20) + 2
 	
 	self.on_floor = false
 	
 	for i = min_x, max_x do
 		if self.position.y_speed > 0 or self.on_platform then
 			if map[next_max_y][i] == 1 then
-				if self.next_coord.y > 20*(max_y - 4) then self.on_floor = true end
-				self.next_coord.y = math.min(self.next_coord.y, 20*(max_y - 4))
-			elseif map[next_max_y][i] == 2 and self.position.y <= 20*(max_y - 4) then
-				if self.next_coord.y > 20*(max_y - 4) then self.on_floor = true end
-				self.next_coord.y = math.min(self.next_coord.y, 20*(max_y - 4))
+				if self.next_coord.y > 20*(max_y - 2) then self.on_floor = true end
+				self.next_coord.y = math.min(self.next_coord.y, 20*(max_y - 2))
+			elseif map[next_max_y][i] == 2 and self.position.y <= 20*(max_y - 2) then
+				if self.next_coord.y > 20*(max_y - 2) then self.on_floor = true end
+				self.next_coord.y = math.min(self.next_coord.y, 20*(max_y - 2))
 			end
 		elseif self.position.y_speed < 0 or self.on_platform then
 			if map[next_min_y][i] == 1 then
@@ -139,10 +139,10 @@ function Player:check_collision(dt)
 		local px = self.position.x
 		for index, object in ipairs(GameController.world.current_map.objects) do
 			
-			if feet_pos <= object.position.y and self.next_coord.y + 80 > object.position.y and px > object.position.x - 35 and px < object.position.x + object.width*20 - 5 then
+			if feet_pos <= object.position.y and self.next_coord.y + self.height > object.position.y and px > object.position.x - self.width - self.sprite_border and px < object.position.x + object.width*Constants.MapUnitToPixelRatio - self.sprite_border then
 				self.on_floor = true
 				self.on_platform = index
-				self.next_coord.y = object.position.y - 80
+				self.next_coord.y = object.position.y - self.height
 			end
 		end
 	end
@@ -214,9 +214,9 @@ function Player:check_collision_on_platform_horizontal()
 	local min_x = math.floor((self.position.x)/20) + 1
 	local max_x = math.ceil((self.position.x)/20) + 2
 	local min_y = math.floor((self.position.y+5)/20) + 1
-	local max_y = math.ceil((self.position.y)/20) + 4
+	local max_y = math.ceil((self.position.y)/20) + 2
 	local next_min_y = math.floor((self.next_coord.y+5)/20) + 1
-	local next_max_y = math.ceil((self.next_coord.y)/20) + 4
+	local next_max_y = math.ceil((self.next_coord.y)/20) + 2
 		
 	for i = min_y, max_y do
 		if (map[i][max_x] ~= 0 and next_x > self.position.x) or (map[i][min_x] ~= 0 and next_x < self.position.x) then
@@ -233,9 +233,9 @@ function Player:check_collision_on_platform_vertical()
 	local min_x = math.floor((self.position.x)/20) + 1
 	local max_x = math.ceil((self.position.x)/20) + 2
 	local min_y = math.floor((self.position.y+5)/20) + 1
-	local max_y = math.ceil((self.position.y)/20) + 4
+	local max_y = math.ceil((self.position.y)/20) + 2
 	local next_min_y = math.floor((self.next_coord.y+5)/20) + 1
-	local next_max_y = math.ceil((self.next_coord.y)/20) + 4
+	local next_max_y = math.ceil((self.next_coord.y)/20) + 2
 	
 	for i = min_x, max_x do
 		if map[next_max_y][i] ~= 0 or map[next_min_y][i] ~= 0 then
