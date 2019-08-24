@@ -159,7 +159,7 @@ function Player:check_collision(dt)
 		end
 	end
 	
-	if not self.on_floor then
+	if not (self.on_floor or self.on_platform) then
 		if self.position.y_speed < -5 then
 			self.animation = 3
 		elseif self.position.y_speed > 5 then

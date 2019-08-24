@@ -70,6 +70,7 @@ function World:update_objs(dt)
 			dy = obj.y - dy
 			
 			if index == GameController.player.on_platform then
+				GameController.player.next_coord = {}
 				GameController.player.next_coord.x = GameController.player.position.x + dx
 				GameController.player.next_coord.y = GameController.player.position.y + dy
 				GameController.player:check_collision(dt)
