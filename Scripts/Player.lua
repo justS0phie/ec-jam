@@ -217,6 +217,7 @@ function Player:check_jump(dt)
 		else
 			self.position.x_speed = 20
 		end
+		self.wall_grip = nil
 	end
 	
 	self.jump_timer = math.max(GameController.player.jump_timer - dt, 0)
