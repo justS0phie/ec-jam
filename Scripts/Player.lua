@@ -4,6 +4,7 @@ Player.__index = Player
 function Player.new()	
 	local player = {
 		position = {x = 380, y = 280, x_speed = 0, y_speed = 0},
+		height = 80,
 		skills = {},
 		sprite = {image = love.graphics.newImage('Graphics/Character/Sprite.png'), quads = {}},
 		dialog_sprite = love.graphics.newImage('Graphics/Character/Dialog.png'),
@@ -132,14 +133,14 @@ function Player:check_collision(dt)
 	self.on_platform = false
 	
 	if self.position.y_speed > 0 then
-		local feet_pos = self.position.y + 80
+		local feet_pos = self.position.y + self.height
 		local px = self.position.x
-		for index, obj in ipairs(GameController.world.current_map.objects) do
+		for index, time_platform in ipairs(GameController.world.current_map.time_platforms) do
 			
-			if feet_pos <= obj.y and self.next_coord.y + 80 > obj.y and px > obj.x - 35 and px < obj.x + obj.width*20 - 5 then
+			if feet_pos <= time_platform.position.y and self.next_coord.y + 80 > time_platform.position.y and px > time_platform.position.x - 35 and px < time_platform.position.x + time_platform.width*20 - 5 then
 				self.on_floor = true
 				self.on_platform = index
-				self.next_coord.y = obj.y - 80
+				self.next_coord.y = time_platform.position.y - 80
 			end
 		end
 	end
@@ -186,6 +187,39 @@ function Player:check_controls(dt)
 		GameController.player.forward = true
 	elseif love.keyboard.isDown('left') and GameController.world.timer > 0 then
 		GameController.player.rewind = true
+	end
+end
+
+function Player:update_position_on_platform(dislocation, time_passed)
+	self.next_coord = {
+		x = self.position.x + dislocation.x,
+		y = self.position.y + dislocation.y
+	}
+	self.position.y = self.next_coord.y
+	if ( not self:check_collision_on_platform(next_coord) ) then
+		self.position.x = self.next_coord.x
+	end
+	--self:check_collision(time_passed)
+end
+
+function Player:check_collision_on_platform() 
+	local next_x = self.next_coord.x
+	local next_y = self.next_coord.y	
+	local map = GameController.world.current_map
+	
+	local min_x = math.floor((self.position.x+5)/20) + 1
+	local max_x = math.ceil((self.position.x-5)/20) + 2
+	local min_y = math.floor((self.position.y+5)/20) + 1
+	local max_y = math.ceil((self.position.y)/20) + 4
+	local next_min_y = math.floor((self.next_coord.y+5)/20) + 1
+	local next_max_y = math.ceil((self.next_coord.y)/20) + 4
+	
+	self.on_floor = false
+	
+	for i = min_x, max_x do
+		if map[next_max_y][i] ~= 0 then
+			return true
+		end
 	end
 end
 
