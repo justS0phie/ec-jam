@@ -195,29 +195,48 @@ function Player:update_position_on_platform(dislocation, time_passed)
 		x = self.position.x + dislocation.x,
 		y = self.position.y + dislocation.y
 	}
-	self.position.y = self.next_coord.y
-	if ( not self:check_collision_on_platform(next_coord) ) then
+	if ( not self:check_collision_on_platform_horizontal(next_coord) ) then
 		self.position.x = self.next_coord.x
+	end
+	if ( not self:check_collision_on_platform_vertical(next_coord) ) then
+		self.position.y = self.next_coord.y
 	end
 	--self:check_collision(time_passed)
 end
 
-function Player:check_collision_on_platform() 
+function Player:check_collision_on_platform_horizontal() 
 	local next_x = self.next_coord.x
 	local next_y = self.next_coord.y	
 	local map = GameController.world.current_map
 	
-	local min_x = math.floor((self.position.x+5)/20) + 1
-	local max_x = math.ceil((self.position.x-5)/20) + 2
+	local min_x = math.floor((self.position.x)/20) + 1
+	local max_x = math.ceil((self.position.x)/20) + 2
+	local min_y = math.floor((self.position.y+5)/20) + 1
+	local max_y = math.ceil((self.position.y)/20) + 4
+	local next_min_y = math.floor((self.next_coord.y+5)/20) + 1
+	local next_max_y = math.ceil((self.next_coord.y)/20) + 4
+		
+	for i = min_y, max_y do
+		if (map[i][max_x] ~= 0 and next_x > self.position.x) or (map[i][min_x] ~= 0 and next_x < self.position.x) then
+			return true
+		end
+	end
+end
+
+function Player:check_collision_on_platform_vertical() 
+	local next_x = self.next_coord.x
+	local next_y = self.next_coord.y	
+	local map = GameController.world.current_map
+	
+	local min_x = math.floor((self.position.x)/20) + 1
+	local max_x = math.ceil((self.position.x)/20) + 2
 	local min_y = math.floor((self.position.y+5)/20) + 1
 	local max_y = math.ceil((self.position.y)/20) + 4
 	local next_min_y = math.floor((self.next_coord.y+5)/20) + 1
 	local next_max_y = math.ceil((self.next_coord.y)/20) + 4
 	
-	self.on_floor = false
-	
 	for i = min_x, max_x do
-		if map[next_max_y][i] ~= 0 then
+		if map[next_max_y][i] ~= 0 or map[next_min_y][i] ~= 0 then
 			return true
 		end
 	end

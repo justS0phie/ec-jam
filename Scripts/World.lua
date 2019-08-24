@@ -20,13 +20,13 @@ function World:load_map(map_id)
 end
 
 function World:update(dt)
-	GameController.player:update_position(dt)
-	
 	if GameController.player.rewind then
 		self:update_time_platforms(-dt/5)
 	elseif GameController.player.forward then
 		self:update_time_platforms(dt/5)
 	end
+	
+	GameController.player:update_position(dt)
 end
 
 function World:keypress()
@@ -69,6 +69,16 @@ function World:update_time_platforms(dt)
 			
 			dx = time_platform.position.x - dx
 			dy = time_platform.position.y - dy
+			
+			local feet_pos = GameController.player.position.y + GameController.player.height
+			if feet_pos > time_platform.position.y and feet_pos < time_platform.position.y - dy then
+				local px = GameController.player.position.x
+				if px > time_platform.position.x - 35 and px < time_platform.position.x + time_platform.width*20 - 5 then
+					self.on_floor = true
+					self.on_platform = index
+					GameController.player.position.y = time_platform.position.y - GameController.player.height
+				end
+			end
 			
 			if index == GameController.player.on_platform then
 				GameController.player:update_position_on_platform({x = dx, y = dy}, dt)
