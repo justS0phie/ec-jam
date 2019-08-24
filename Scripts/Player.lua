@@ -6,6 +6,7 @@ function Player.new()
 		position = {x = 380, y = 280, x_speed = 0, y_speed = 0},
 		height = 40,
 		width = 30,
+		stamina = 1,
 		sprite_border = 5,
 		skills = {},
 		sprite = {image = love.graphics.newImage('Graphics/Character/Sprite.png'), quads = {}},
@@ -51,6 +52,8 @@ function Player:update_position(dt)
 	self.position.y = self.next_coord.y
 	self.next_coord = nil
 	
+	if self.on_floor then self.stamina = 1 end
+	
 	self.animation_timer = (self.animation_timer + 60*dt)
 	if self.animation_timer >= 1000 then self.animation_timer = self.animation_timer - 1000 end
 end
@@ -72,6 +75,11 @@ function Player:check_movement(dt)
 		end
 	end
 	
+	if self.wall_grip and self.stamina > 0 then
+		self.position.y_speed = math.max(self.position.y_speed - 120*dt, -10)
+		self.stamina = math.max(self.stamina - dt/2, 0)
+	end
+	
 	self.animation = 2
 	if x_speed > 0 then
 		self.invert_sprite = true
@@ -87,11 +95,20 @@ end
 
 function Player:check_gravity(dt)
 	local fall_speed = 20
-	if love.keyboard.isDown('s') then
+	local y_speed = 0
+	
+	if self.wall_grip then
+		y_speed = self.position.y_speed
+		fall_speed = fall_speed/2
+		if self.stamina == 0 then 
+			y_speed = math.min(self.position.y_speed + 120*dt, fall_speed)
+		end
+	elseif love.keyboard.isDown('s') then
 		fall_speed = 30
-		local y_speed = math.min(self.position.y_speed + 120*dt, fall_speed)
+		y_speed = math.min(self.position.y_speed + 240*dt, fall_speed)
+	else
+		y_speed = math.min(self.position.y_speed + 120*dt, fall_speed)
 	end
-	local y_speed = math.min(self.position.y_speed + 120*dt, fall_speed)
 
 	if love.keyboard.isDown('w') then
 		y_speed = y_speed - 60*dt
@@ -150,13 +167,17 @@ function Player:check_collision(dt)
 	min_x = math.floor((self.next_coord.x)/20) + 1
 	max_x = math.ceil((self.next_coord.x)/20) + 2
 	
+	self.wall_grip = nil
+	
 	for i=min_y, max_y do
 		if self.position.x_speed > 0 then
 			if map[i][max_x] == 1 then
+				self.wall_grip = 1
 				self.next_coord.x = math.min(self.next_coord.x, 20*(max_x -3))
 			end
 		elseif self.position.x_speed < 0 then
 			if map[i][min_x] == 1 then
+				self.wall_grip = -1
 				self.next_coord.x = math.max(self.next_coord.x, 20*min_x)
 			end
 		end
@@ -171,11 +192,31 @@ function Player:check_collision(dt)
 			self.animation = 5
 		end
 	end
+	
+	if self.wall_grip and not self.on_floor then
+		if self.position.y_speed < 0 then
+			self.animation = 2
+		else
+			self.animation = 1
+		end
+	end
 end
 
 function Player:check_jump(dt)
 	if self.on_floor and self.jump_timer > 0 then
 		self.position.y_speed = -30
+		self.jump_timer = 0
+	end
+	
+	if self.wall_grip and self.jump_timer > 0 then
+		self.position.y_speed = -30
+		self.jump_timer = 0
+		self.stamina = math.max(self.stamina - 0.25, 0)
+		if self.wall_grip == 1 then
+			self.position.x_speed = -20
+		else
+			self.position.x_speed = 20
+		end
 	end
 	
 	self.jump_timer = math.max(GameController.player.jump_timer - dt, 0)
@@ -246,19 +287,27 @@ end
 
 function Player:reset_position()
 	self.position = {x = 380, y = 280, x_speed = 0, y_speed = 0}
+	self.stamina = 1
+	self.wall_grip = nil
 end
 
 function Player:draw()
-	local x = self.position.x
-	local y = self.position.y
+	local total_width = self.width + 2*self.sprite_border
+	local x = self.position.x + total_width/2
+	local y = self.position.y + self.height/2
 	local s_x = 1
 	local current = self.animations[self.animation]
 	local framerate = current.framerate or 1
 	local frame = math.floor(self.animation_timer*framerate)%(#current) + 1
+	local rot = 0
 	
 	if self.invert_sprite then
-		x = x + 40
 		s_x = -1
 	end
-	View.draw(self.sprite.image,self.sprite.quads[current[frame]],x,y,0,s_x,1)
+	
+	if self.wall_grip then
+		rot = -math.pi/2 * self.wall_grip
+	end
+	
+	View.draw(self.sprite.image,self.sprite.quads[current[frame]],x,y,rot,s_x,1, total_width/2, self.height/2)
 end

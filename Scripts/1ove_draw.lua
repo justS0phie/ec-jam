@@ -11,6 +11,9 @@ function love.draw(dt)
 	end
 	
 	View.print('Memory actually used: '..math.ceil(collectgarbage('count')).." kB", 10,10)
-	if GameController.world then View.print('Timer: '..GameController.world.timer, 10,40) end
+	if GameController.world then 
+		View.print('Timer: '..GameController.world.timer, 10,40) 
+		View.print('Stamina: '..GameController.player.stamina, 10,70) 
+	end
 	collectgarbage('collect')
 end
