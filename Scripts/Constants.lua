@@ -18,3 +18,5 @@ Constants.FONT = love.graphics.newFont(26)
 Constants.EnumQueues = {
 	MAP = 1,
 }
+
+Constants.MapUnitToPixelRatio = 20

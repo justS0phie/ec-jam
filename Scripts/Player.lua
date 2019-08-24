@@ -5,6 +5,8 @@ function Player.new()
 	local player = {
 		position = {x = 380, y = 280, x_speed = 0, y_speed = 0},
 		height = 80,
+		width = 30,
+		sprite_border = 5,
 		skills = {},
 		sprite = {image = love.graphics.newImage('Graphics/Character/Sprite.png'), quads = {}},
 		dialog_sprite = love.graphics.newImage('Graphics/Character/Dialog.png'),

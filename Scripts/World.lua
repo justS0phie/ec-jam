@@ -5,7 +5,7 @@ function World.new()
 	local world = {
 		images = {
 		},
-		timer = 0,
+		timer = 0
 	}
 	
 	setmetatable(world, World)
@@ -64,16 +64,16 @@ function World:update_time_platforms(dt)
 			local dx = time_platform.position.x
 			local dy = time_platform.position.y
 
-			time_platform.position.x = time_platform.initialPosition.x * 20 + (time_platform.finalPosition.x - time_platform.initialPosition.x ) * 20 * Utils.smooth( (time_platform_timer * time_platform.numberOfCycles) % 2)
-    		time_platform.position.y = time_platform.initialPosition.y * 20 + (time_platform.finalPosition.y - time_platform.initialPosition.y ) * 20 * Utils.smooth( (time_platform_timer * time_platform.numberOfCycles) % 2)
+			time_platform.position.x = ( time_platform.initialPosition.x + (time_platform.finalPosition.x - time_platform.initialPosition.x ) * Utils.smooth( (time_platform_timer * time_platform.numberOfCycles) % 2) ) * Constants.MapUnitToPixelRatio
+    		time_platform.position.y = (time_platform.initialPosition.y + (time_platform.finalPosition.y - time_platform.initialPosition.y ) * Utils.smooth( (time_platform_timer * time_platform.numberOfCycles) % 2) ) * Constants.MapUnitToPixelRatio
 			
 			dx = time_platform.position.x - dx
 			dy = time_platform.position.y - dy
 			
 			local feet_pos = GameController.player.position.y + GameController.player.height
 			if feet_pos > time_platform.position.y and feet_pos < time_platform.position.y - dy then
-				local px = GameController.player.position.x
-				if px > time_platform.position.x - 35 and px < time_platform.position.x + time_platform.width*20 - 5 then
+				if (GameController.player.position.x + GameController.player.width + GameController.player.sprite_border > time_platform.position.x
+					and GameController.player.position.x + GameController.player.sprite_border < time_platform.position.x + time_platform.width*Constants.MapUnitToPixelRatio) then
 					self.on_floor = true
 					self.on_platform = index
 					GameController.player.position.y = time_platform.position.y - GameController.player.height

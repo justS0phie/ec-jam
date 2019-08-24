@@ -27,8 +27,8 @@ function Map:load_time_platforms()
 			new_time_platform  = time_platform
 			
 			new_time_platform.position = {
-				x = new_time_platform.initialPosition.x * 20,
-				y = new_time_platform.initialPosition.y * 20
+				x = new_time_platform.initialPosition.x * Constants.MapUnitToPixelRatio,
+				y = new_time_platform.initialPosition.y * Constants.MapUnitToPixelRatio
 			}
 		end
 	end
@@ -40,7 +40,7 @@ function Map:draw()
 	for _, time_platform in ipairs(self.time_platforms) do		
 		if time_platform.type == "mv_platform" then
 			love.graphics.setColor(0,0,1)
-			love.graphics.rectangle("fill", time_platform.position.x, time_platform.position.y, time_platform.width * 20, 20)
+			love.graphics.rectangle("fill", time_platform.position.x, time_platform.position.y, time_platform.width * Constants.MapUnitToPixelRatio, 20)
 			love.graphics.setColor(1,1,1)
 		end
 	end
