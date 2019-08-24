@@ -134,12 +134,12 @@ function Player:check_collision(dt)
 	if self.position.y_speed > 0 then
 		local feet_pos = self.position.y + 80
 		local px = self.position.x
-		for index, obj in ipairs(GameController.world.current_map.objects) do
+		for index, time_platform in ipairs(GameController.world.current_map.time_platforms) do
 			
-			if feet_pos <= obj.y and self.next_coord.y + 80 > obj.y and px > obj.x - 35 and px < obj.x + obj.width*20 - 5 then
+			if feet_pos <= time_platform.position.y and self.next_coord.y + 80 > time_platform.position.y and px > time_platform.position.x - 35 and px < time_platform.position.x + time_platform.width*20 - 5 then
 				self.on_floor = true
 				self.on_platform = index
-				self.next_coord.y = obj.y - 80
+				self.next_coord.y = time_platform.position.y - 80
 			end
 		end
 	end
@@ -187,6 +187,16 @@ function Player:check_controls(dt)
 	elseif love.keyboard.isDown('left') and GameController.world.timer > 0 then
 		GameController.player.rewind = true
 	end
+end
+
+function Player:update_position_on_platform(dislocation, time_passed)
+	self.next_coord = {
+		x = self.position.x + dislocation.x,
+		y = self.position.y + dislocation.y
+	}
+	self:check_collision(time_passed)
+	self.position.x = self.next_coord.x
+	self.position.y = self.next_coord.y
 end
 
 function Player:draw()

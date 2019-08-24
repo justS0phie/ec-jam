@@ -23,9 +23,9 @@ function World:update(dt)
 	GameController.player:update_position(dt)
 	
 	if GameController.player.rewind then
-		self:update_objs(-dt/5)
+		self:update_time_platforms(-dt/5)
 	elseif GameController.player.forward then
-		self:update_objs(dt/5)
+		self:update_time_platforms(dt/5)
 	end
 end
 
@@ -49,33 +49,29 @@ function World:draw()
 	love.graphics.translate(-self.current_map.origin.x, -self.current_map.origin.y)
 end
 
-function World:update_objs(dt)
+function World:update_time_platforms(dt)
 	self.timer = math.max(self.timer + dt, 0)
 	self.timer = math.min(self.timer, 1)
-	local obj_timer
+	local time_platform_timer
 	
-	for index, obj in ipairs(self.current_map.objects) do
-		obj_timer = (self.timer- obj.To) / (obj.Ti - obj.To)
+	for index, time_platform in ipairs(self.current_map.time_platforms) do
+		time_platform_timer = (self.timer - time_platform.initialTime) / (time_platform.finalTime - time_platform.initialTime)
 		
-		if obj.Ti < self.timer then obj_timer = 1 end
-		if obj.To > self.timer then obj_timer = 0 end
+		if time_platform.finalTime < self.timer then time_platform_timer = 1 end
+		if time_platform.initialTime > self.timer then time_platform_timer = 0 end
 		
-		if obj.type == "mv_platform" then
-			local dx = obj.x
-			local dy = obj.y
-			obj.x = obj.Xo*20 + (obj.Xi - obj.Xo)*20*Utils.smooth((obj_timer*obj.F)%2)
-			obj.y = obj.Yo*20 + (obj.Yi - obj.Yo)*20*Utils.smooth((obj_timer*obj.F)%2)
+		if time_platform.type == "mv_platform" then
+			local dx = time_platform.position.x
+			local dy = time_platform.position.y
+
+			time_platform.position.x = time_platform.initialPosition.x * 20 + (time_platform.finalPosition.x - time_platform.initialPosition.x ) * 20 * Utils.smooth( (time_platform_timer * time_platform.numberOfCycles) % 2)
+    		time_platform.position.y = time_platform.initialPosition.y * 20 + (time_platform.finalPosition.y - time_platform.initialPosition.y ) * 20 * Utils.smooth( (time_platform_timer * time_platform.numberOfCycles) % 2)
 			
-			dx = obj.x - dx
-			dy = obj.y - dy
+			dx = time_platform.position.x - dx
+			dy = time_platform.position.y - dy
 			
 			if index == GameController.player.on_platform then
-				GameController.player.next_coord = {}
-				GameController.player.next_coord.x = GameController.player.position.x + dx
-				GameController.player.next_coord.y = GameController.player.position.y + dy
-				GameController.player:check_collision(dt)
-				GameController.player.position.x = GameController.player.next_coord.x
-				GameController.player.position.y = GameController.player.next_coord.y
+				GameController.player:update_position_on_platform({x = dx, y = dy}, dt)
 			end
 		end
 	end

@@ -30,8 +30,8 @@ return {
 	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
 	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},	
 	
-	obj = {
-		{"mv_platform", 9, 10, 20, 15, 0.3, 1, 1, 4},
-		{"mv_platform", 35, 7, 14, 20, 0, 0.7, 2, 3}
-	}
+	time_platforms = {
+		{type = "mv_platform", initialPosition = {x = 9, y = 10}, finalPosition = {x = 20, y = 15}, initialTime = 0.3, finalTime = 1, numberOfCycles = 1, width = 4},
+		{type = "mv_platform", initialPosition = {x = 35, y = 7}, finalPosition = {x = 14, y = 20}, initialTime = 0, finalTime = 0.7, numberOfCycles = 2, width = 3}
+	}	
 }
