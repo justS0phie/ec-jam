@@ -137,12 +137,12 @@ function Player:check_collision(dt)
 	if self.position.y_speed > 0 then
 		local feet_pos = self.position.y + self.height
 		local px = self.position.x
-		for index, time_platform in ipairs(GameController.world.current_map.time_platforms) do
+		for index, object in ipairs(GameController.world.current_map.objects) do
 			
-			if feet_pos <= time_platform.position.y and self.next_coord.y + 80 > time_platform.position.y and px > time_platform.position.x - 35 and px < time_platform.position.x + time_platform.width*20 - 5 then
+			if feet_pos <= object.position.y and self.next_coord.y + 80 > object.position.y and px > object.position.x - 35 and px < object.position.x + object.width*20 - 5 then
 				self.on_floor = true
 				self.on_platform = index
-				self.next_coord.y = time_platform.position.y - 80
+				self.next_coord.y = object.position.y - 80
 			end
 		end
 	end
@@ -242,6 +242,10 @@ function Player:check_collision_on_platform_vertical()
 			return true
 		end
 	end
+end
+
+function Player:reset_position()
+	self.position = {x = 380, y = 280, x_speed = 0, y_speed = 0}
 end
 
 function Player:draw()

@@ -13,8 +13,12 @@ end
 
 function GameController.start_new_game()
 	GameController.menu = nil
-	GameController.state = Constants.EnumGameState.DIALOG
+	GameController.state = Constants.EnumGameState.IN_GAME
 	GameController.world = World.new()
 	GameController.player = Player.new()
-	GameController.world:load_map(1,0,0)
+	GameController.world:load_map(1)
+end
+
+function GameController.next_level()
+	GameController.world:load_map(GameController.level_no + 1)
 end

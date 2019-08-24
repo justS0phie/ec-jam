@@ -51,13 +51,10 @@ end
 
 function MainMenu:options_keypress(dt)
 	self:esc_goes_to(Constants.EnumMainSubmenu.MAIN, Constants.EnumMainSubmenu.OPTIONS)
-	self:menu_controls(4)
+	self:menu_controls(2)
 	
 	if MyLib.key_list.confirm then
-		-- TODO: Extras
-		if self.option == 3 then
-
-		elseif self.option == 4 then
+		if self.option == 2 then
 			self:fade_to_submenu(Constants.EnumMainSubmenu.MAIN, Constants.EnumMainSubmenu.OPTIONS)
 		end
 	end

@@ -14,7 +14,7 @@ end
 function MainMenu:options_draw()
 	if not (self.option == 1) then
 		View.draw(self.images.select_img, 300, self.option*95+180)
-		love.graphics.setColor(126,126,126)		
+		love.graphics.setColor(0.5,0.5,0.5)
 	end
 	View.draw(self.images.select_img, 400+350*(self.volume/100), 235)
 	love.graphics.setColor(1,1,1)

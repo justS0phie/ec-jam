@@ -15,16 +15,20 @@ end
 
 function World:load_map(map_id)
 	self.current_map = Map.load(map_id)
+	self.current_map.image = love.graphics.newCanvas()
 	self.current_map:begin_loading()
+	GameController.player:reset_position()
 	self.timer = 0
 end
 
 function World:update(dt)
 	if GameController.player.rewind then
-		self:update_time_platforms(-dt/5)
+		self:update_objects(-dt/5)
 	elseif GameController.player.forward then
-		self:update_time_platforms(dt/5)
+		self:update_objects(dt/5)
 	end
+	
+	self:update_jam_collision()
 	
 	GameController.player:update_position(dt)
 end
@@ -49,34 +53,56 @@ function World:draw()
 	love.graphics.translate(-self.current_map.origin.x, -self.current_map.origin.y)
 end
 
-function World:update_time_platforms(dt)
+function World:update_jam_collision()
+	for _, object in ipairs(self.current_map.objects) do
+		if object.type == "jam" then
+			local py = GameController.player.position.y + GameController.player.sprite_border
+			local px = GameController.player.position.x + GameController.player.sprite_border
+			local ox = object.position.x*Constants.MapUnitToPixelRatio
+			local oy = object.position.y*Constants.MapUnitToPixelRatio + object.dy
+
+			if px + GameController.player.width > ox and px < ox + 2*Constants.MapUnitToPixelRatio then
+				if py < oy + 2*Constants.MapUnitToPixelRatio and GameController.player.position.y + GameController.player.height > oy then
+					GameController.next_level()
+				end
+			end
+		end
+	end
+end
+
+function World:update_objects(dt)
 	self.timer = math.max(self.timer + dt, 0)
 	self.timer = math.min(self.timer, 1)
-	local time_platform_timer
+	local object_timer
 	
-	for index, time_platform in ipairs(self.current_map.time_platforms) do
-		time_platform_timer = (self.timer - time_platform.initialTime) / (time_platform.finalTime - time_platform.initialTime)
+	for index, object in ipairs(self.current_map.objects) do
 		
-		if time_platform.finalTime < self.timer then time_platform_timer = 1 end
-		if time_platform.initialTime > self.timer then time_platform_timer = 0 end
+		if object.type ~= "jam" then
+			object_timer = (self.timer - object.initialTime) / (object.finalTime - object.initialTime)
 		
-		if time_platform.type == "mv_platform" then
-			local dx = time_platform.position.x
-			local dy = time_platform.position.y
+			if object.finalTime < self.timer then object_timer = 1 end
+			if object.initialTime > self.timer then object_timer = 0 end
+		else
+			object.dy = math.sin(math.pi*((self.timer*10)%10))*10
+		end
+		
+		if object.type == "mv_platform" then
+			local dx = object.position.x
+			local dy = object.position.y
 
-			time_platform.position.x = ( time_platform.initialPosition.x + (time_platform.finalPosition.x - time_platform.initialPosition.x ) * Utils.smooth( (time_platform_timer * time_platform.numberOfCycles) % 2) ) * Constants.MapUnitToPixelRatio
-    		time_platform.position.y = (time_platform.initialPosition.y + (time_platform.finalPosition.y - time_platform.initialPosition.y ) * Utils.smooth( (time_platform_timer * time_platform.numberOfCycles) % 2) ) * Constants.MapUnitToPixelRatio
+			object.position.x = ( object.initialPosition.x + (object.finalPosition.x - object.initialPosition.x ) * Utils.smooth( (object_timer * object.numberOfCycles) % 2) ) * Constants.MapUnitToPixelRatio
+    		object.position.y = (object.initialPosition.y + (object.finalPosition.y - object.initialPosition.y ) * Utils.smooth( (object_timer * object.numberOfCycles) % 2) ) * Constants.MapUnitToPixelRatio
 			
-			dx = time_platform.position.x - dx
-			dy = time_platform.position.y - dy
+			dx = object.position.x - dx
+			dy = object.position.y - dy
 			
 			local feet_pos = GameController.player.position.y + GameController.player.height
-			if feet_pos > time_platform.position.y and feet_pos < time_platform.position.y - dy then
-				if (GameController.player.position.x + GameController.player.width + GameController.player.sprite_border > time_platform.position.x
-					and GameController.player.position.x + GameController.player.sprite_border < time_platform.position.x + time_platform.width*Constants.MapUnitToPixelRatio) then
+			if feet_pos > object.position.y and feet_pos < object.position.y - dy then
+				if (GameController.player.position.x + GameController.player.width + GameController.player.sprite_border > object.position.x
+					and GameController.player.position.x + GameController.player.sprite_border < object.position.x + object.width*Constants.MapUnitToPixelRatio) then
 					self.on_floor = true
 					self.on_platform = index
-					GameController.player.position.y = time_platform.position.y - GameController.player.height
+					GameController.player.position.y = object.position.y - GameController.player.height
 				end
 			end
 			
