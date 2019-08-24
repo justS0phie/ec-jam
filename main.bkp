@@ -1,0 +1,405 @@
+﻿Menu = true
+Cred = false
+OverW = false
+Battle = false
+GMenu = false
+Xcam=0
+Ycam=0
+MapNo = 1
+Facing = 1
+Check = false
+ButtonP = false
+
+Player = { Px = 0, Py = 0, Pxgrid = 0, Pygrid = 0,Speed = 4,CharSpt = {}, CharTlk = {}, CharPht = nil}
+
+Xmax=20
+Ymax=15
+Map = {}
+for i=1,1000 do
+    Map[i] = {}
+	for j=1,1000 do
+		Map[i][j]=0
+	end
+end
+
+SelectMenu = 180
+OverMoving = false
+
+function loadMap(MapNo)
+	
+	MapFile = love.filesystem.newFile('MapData/Map ('..MapNo..').txt')
+	MapFile:open ("r")
+	
+	Data = MapFile:read(3)
+	Xmin = tonumber(Data)
+	Data = MapFile:read(3)
+	Ymin = tonumber(Data)
+	Data = MapFile:read(3)
+	Xmax = tonumber(Data)
+	Data = MapFile:read(3)
+	Ymax = tonumber(Data)
+	Data = MapFile:read(3)
+	Player.Pxgrid = tonumber(Data)
+	Data = MapFile:read(3)
+	Player.Pygrid = tonumber(Data)
+	Data = MapFile:read(3)
+	Xcam = -40*tonumber(Data)
+	Data = MapFile:read(3)
+	Ycam = -40*tonumber(Data)
+	Data = MapFile:read(3)
+	Facing = tonumber(Data)
+	
+	Data = MapFile:read(3)
+	
+	for j=Ymin,Ymax do
+		for i=Xmin,Xmax do
+			Data = MapFile:read(1)
+			if Data == '-' then
+				Data = MapFile:read(2)
+				Map[i][j] = -(tonumber(Data))
+			else
+				Data = Data..MapFile:read(2)
+				Map[i][j] = tonumber(Data)
+			end
+		end
+		Data = MapFile:read(2)
+	end
+	
+	MapFile:close()
+	
+	Player.Px=Player.Pxgrid*40-40
+	Player.Py=Player.Pygrid*40-40
+	
+end
+
+function love.load(arg)
+    Selecao = love.graphics.newImage('Graphics/Misc/Selecao.png')
+	MenuImg = love.graphics.newImage('Graphics/Misc/Menu.png')
+	CredImg = love.graphics.newImage('Graphics/Misc/Credits.png')
+	for i = 1,40 do
+		Player.CharSpt[i] = love.graphics.newImage('Graphics/Dev Files/Personagem ('..i..').png')
+	end
+	for i =1,1 do
+		Player.CharTlk[i] = love.graphics.newImage('Graphics/Dev Files/CharPic ('..i..').png')
+	end
+	FloorTl = love.graphics.newImage('Graphics/Dev Files/Tile test 1.png')
+	DialogBox = love.graphics.newImage('Graphics/Dev Files/Dialogbox.png')
+	SideMenu = love.graphics.newImage('Graphics/Dev Files/SideMenu.png')
+	SideMenub = love.graphics.newImage('Graphics/Dev Files/SideMenu2.png')
+	SideMenuS = love.graphics.newImage('Graphics/Dev Files/SideMenuS.png')
+end
+
+function love.keypressed (key)
+
+	if (key =="space" or key == "return" or key == "z") and not OverMoving then
+		ButtonP=true
+	end
+	
+	if (key == "escape") and OverW and not OverMoving then
+		SelectMenu=1
+		UpMenu = false
+		DownMenu = false
+		GMenu=not GMenu
+	end
+	
+	if Cred then
+		Cred = false
+		Menu = true
+		ButtonP = false
+	end
+	
+	if (key == "up" or key == "w") then
+		UpMenu = true
+	end
+	
+	if (key == "down" or key == "s") then
+		DownMenu = true
+	end
+	
+	if (key == "left" or key == "a") then
+		LeftMenu = true
+	end
+	
+	if (key == "right" or key == "d") then
+		RightMenu = true
+	end
+	
+end
+
+function love.update(dt)
+
+	dt = 0.02
+
+	-- Menu
+		if love.keyboard.isDown('escape') and Menu then
+			love.event.push('quit')
+		end
+		if UpMenu and Menu then
+		UpMenu = false
+			if SelectMenu>180 then
+				SelectMenu=SelectMenu - 63
+			end
+		elseif DownMenu and Menu then
+		DownMenu = false
+			if SelectMenu<369 then
+				SelectMenu=SelectMenu + 63
+			end
+		elseif ButtonP and Menu then
+		ButtonP = false
+			if SelectMenu == 180 then
+				MapNo = 1
+				loadMap(MapNo)
+				ButtonP = false
+				Check = false
+				OverW = true -- Aqui vai passar pra load/new dps
+				Menu = false
+			elseif SelectMenu == 243 then
+				
+			elseif SelectMenu == 306 then
+				ButtonP=false
+				Cred = true
+				Menu = false
+			elseif SelectMenu == 369 then
+				love.event.push('quit')
+			end
+		end
+		
+	-- In-game
+	-- Overworld
+		if OverW then
+			if Map [Player.Pxgrid][Player.Pygrid+1] == -1 then			-- Geração de mapas
+				if MapNo == 1 then
+					MapNo = 2
+				elseif MapNo ==2 then
+					if Player.Pygrid+1==10 then
+						MapNo = 1
+					elseif Player.Pygrid+1==1 then
+						MapNo = 999
+					else
+						MapNo = 5
+					end
+				end
+				
+				if MapNo <999 then
+					loadMap(MapNo)
+				else
+																			-- Fora do mapa
+				end
+			end
+			if  not Check and not GMenu then	-- Comandos fora de diálogos
+				if love.keyboard.isDown('rshift','lshift') and not OverMoving then
+					Player.Speed = 2
+				elseif not OverMoving then
+					Player.Speed = 1
+				end	
+				if love.keyboard.isDown('down','s') and not OverMoving then
+					Facing = 1
+					if Map[Player.Pxgrid][Player.Pygrid+2]<=0 then
+						OverMoving = true
+						OverMoveDown = true
+					end
+				elseif love.keyboard.isDown('right','d') and not OverMoving then
+					Facing = 2
+					if Map[Player.Pxgrid+1][Player.Pygrid+1]<=0 then
+						OverMoving = true
+						OverMoveRight = true
+					end
+				elseif love.keyboard.isDown('up','w') and not OverMoving then
+					Facing = 3
+					if Map[Player.Pxgrid][Player.Pygrid]<=0 then
+						OverMoving = true
+						OverMoveUp = true
+					end
+				elseif love.keyboard.isDown('left','a') and not OverMoving then
+					Facing = 4
+					if Map[Player.Pxgrid-1][Player.Pygrid+1]<=0 then
+						OverMoving = true
+						OverMoveLeft = true
+					end
+				end
+				if ButtonP then
+					Check=true
+					ButtonP=false
+					if Facing == 1 then
+						CheckID=Map[Player.Pxgrid][Player.Pygrid+2]
+					elseif Facing == 2 then
+						CheckID=Map[Player.Pxgrid+1][Player.Pygrid+1]
+					elseif Facing == 3 then
+						CheckID=Map[Player.Pxgrid][Player.Pygrid]
+					elseif Facing == 4 then
+						CheckID=Map[Player.Pxgrid-1][Player.Pygrid+1]
+					end
+				end
+			end
+			
+			if UpMenu and GMenu then
+			UpMenu=false
+				if SelectMenu>3 then
+					SelectMenu=SelectMenu - 3
+				end
+			elseif DownMenu and GMenu then
+			DownMenu = false
+				if SelectMenu<4 then
+					SelectMenu=SelectMenu + 3
+				end
+			elseif RightMenu and GMenu then
+			RightMenu = false
+				if SelectMenu<6 and SelectMenu ~= 3 then
+					SelectMenu=SelectMenu + 1 
+				end
+			elseif LeftMenu and GMenu then
+			LeftMenu = false
+				if SelectMenu>1 and SelectMenu ~=4 then
+					SelectMenu=SelectMenu - 1
+				end
+			elseif ButtonP and GMenu then
+				ButtonP = false
+				if SelectMenu == 6 then -- Quit
+					SelectMenu = 180
+					OverMoving = false
+					Menu = true
+					Cred = false
+					OverW = false
+					Battle = false
+					GMenu = false
+					Xcam=0
+					Ycam=0
+					Facing = 1
+					Check = false
+					ButtonP = false
+				end
+				if SelectMenu == 5 then -- Options
+				
+				end
+				if SelectMenu == 4 then -- To do List
+				
+				end
+				if SelectMenu == 3 then -- Friends
+				
+				end
+				if SelectMenu == 2 then -- Equipment
+				
+				end
+				if SelectMenu == 1 then -- Inventory
+				
+				end
+			end
+				
+			if Check then						-- Dentro de diálogo
+				if ButtonP then
+					ButtonP = false
+					Check=false
+					CheckID=0
+				end
+			end
+			if OverMoveDown then				-- Movimentos
+				if Player.Pygrid+5<Ymax and Player.Py+Ycam>=360 then
+					Ycam=Ycam-Player.Speed*dt*100
+				end
+				Player.Py=Player.Py+Player.Speed*dt*100
+				if Player.Py % 40 == 0 then
+					OverMoveDown = false
+					OverMoving = false
+					Player.Pygrid=Player.Pygrid+1
+				end
+			end
+			if OverMoveLeft then
+				if Player.Pxgrid>9 and Xcam < 0 and Player.Px+Xcam<=320  then
+					Xcam=Xcam+Player.Speed*dt*100
+				end
+				Player.Px=Player.Px-Player.Speed*dt*100
+				if Player.Px % 40 == 0 then
+					OverMoveLeft = false
+					OverMoving = false
+					Player.Pxgrid=Player.Pxgrid-1
+				end
+			end
+			if OverMoveRight then
+				if Player.Pxgrid+7 < Xmax and Player.Px+Xcam>=480 then
+					Xcam=Xcam-Player.Speed*dt*100
+				end
+				Player.Px=Player.Px+Player.Speed*dt*100
+				if Player.Px % 40 == 0 then
+					OverMoveRight = false
+					OverMoving = false
+					Player.Pxgrid=Player.Pxgrid+1
+				end
+			end
+			if OverMoveUp then
+				if Player.Pygrid>6 and Ycam<0 and Player.Py+Ycam<=240  then
+					Ycam=Ycam+Player.Speed*dt*100
+				end
+				Player.Py=Player.Py-Player.Speed*dt*100
+				if Player.Py % 40 == 0 then
+					OverMoveUp = false
+					OverMoving = false
+					Player.Pygrid=Player.Pygrid-1
+				end
+			end
+		end
+	-- Battle
+	
+	-- Menus
+end
+
+function love.draw(dt)
+	
+	if Menu then
+		love.graphics.draw(MenuImg, 0, 0)
+		love.graphics.draw(Selecao, 280, SelectMenu)
+	end
+	if Cred then
+		love.graphics.draw(CredImg, 0, 0)
+	end
+	if OverW then
+		i=1
+		j=1
+		while (i<= Xmax) do
+			if i>= Xmin then
+				while (j<=Ymax) do
+					if j>= Ymin then
+						if Map[i][j]==0 and (40*(i-1)+Xcam)>(-80) and (40*(j-1)+Ycam)>(-80) and (40*(i-1)+Xcam)<(880) and (40*(j-1)+Ycam)<(680) then
+							love.graphics.draw(FloorTl, 40*(i-1)+Xcam, 40*(j-1)+Ycam)
+						elseif Map[i][j]==1 and (40*(i-1)+Xcam)>(-80) and (40*(j-1)+Ycam)>(-80) and (40*(i-1)+Xcam)<(880) and (40*(j-1)+Ycam)<(680) then
+							love.graphics.rectangle("fill", 40*(i-1)+Xcam, 40*(j-1)+Ycam, 40, 40 )
+						end
+					end
+					j=j+1
+				end
+			end
+			j=1
+			i=i+1
+		end
+		i=((Player.Px % 40 + Player.Py % 40)/4) - (((Player.Px % 40 + Player.Py % 40)/4) %1)
+		i=i+(Facing-1)*10
+		i=i+1
+		love.graphics.draw(Player.CharSpt[i], Player.Px+Xcam, Player.Py+Ycam)
+		i=1
+		j=1
+	end
+	
+	if Check then
+		love.graphics.draw(DialogBox,50,425)
+		love.graphics.draw(Player.CharTlk[1],53,428)
+		
+		if CheckID==0 then
+			love.graphics.print("Acho que não tem nada no chão...",240,510,0,1,1,0,0)
+		elseif CheckID==1 then
+			love.graphics.print("A parede está como sempre esteve",240,510,0,1,1,0,0)
+		elseif CheckID<0 then
+			love.graphics.print("Isso e uma saída...",230,500,0,1,1,0,0)
+		end
+	end
+	
+	if GMenu then
+		love.graphics.draw(SideMenu, 400, 0)
+		love.graphics.draw(SideMenub, 400, 0)
+		Xmenu =((SelectMenu-1)%3)*103 + 490
+		Ymenu =(((SelectMenu-1)/3)-((SelectMenu-1)/3)%1)*110 + 225
+		love.graphics.draw(SideMenuS,Xmenu,Ymenu)
+	end
+	
+	if BugsPraCaralho then
+	
+	end
+end
