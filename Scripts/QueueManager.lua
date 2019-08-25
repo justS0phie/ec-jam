@@ -17,7 +17,7 @@ end
 function QueueManager.load_map(queue, index)
 	--GameController.world.current_map.image = love.graphics.newImage("Levels/Level_"..queue.map_id.."/Image.png")
 	local map = GameController.world.current_map
-	map.image = love.graphics.newCanvas()
+	map.image = love.graphics.newCanvas(#map[1]*Constants.MapUnitToPixelRatio, #map*Constants.MapUnitToPixelRatio)
 	love.graphics.setCanvas(map.image)
 	
 	love.graphics.setColor(0.5,0.5,0.5)

@@ -7,5 +7,5 @@ function love.conf(t)
 	t.modules.joystick = false
     t.modules.physics = false
 
-	t.console = false
+	t.console = true
 end
