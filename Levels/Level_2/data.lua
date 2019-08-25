@@ -32,5 +32,7 @@ return {
 	
 	objects = {
 		{type = "mv_platform", initialPosition = {x = 3, y = 17}, finalPosition = {x = 20, y = 17}, initialTime = 0.3, finalTime = 1, numberOfCycles = 1, width = 4},
-	}	
+	},
+
+	start_position = {x=19,y=3}	
 }
