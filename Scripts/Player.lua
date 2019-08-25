@@ -156,7 +156,11 @@ function Player:check_collision(dt)
 		local px = self.position.x
 		for index, object in ipairs(GameController.world.current_map.objects) do
 			
-			if feet_pos <= object.position.y and self.next_coord.y + self.height > object.position.y and px > object.position.x - self.width - self.sprite_border and px < object.position.x + object.width*Constants.MapUnitToPixelRatio - self.sprite_border then
+			if feet_pos <= object.position.y
+				and (object.type ~= "disappearing_platform" or object.visible)
+				and self.next_coord.y + self.height > object.position.y 
+				and px > object.position.x - self.width - self.sprite_border
+				and px < object.position.x + object.width*Constants.MapUnitToPixelRatio - self.sprite_border then
 				self.on_floor = true
 				self.on_platform = index
 				self.next_coord.y = object.position.y - self.height
