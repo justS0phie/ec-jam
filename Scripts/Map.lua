@@ -37,6 +37,7 @@ function Map:load_objects()
 end
 
 function Map:draw()
+	
 	View.draw(self.image,0,0)
 	
 	for _, object in ipairs(self.objects) do		

@@ -11,6 +11,7 @@ require ('1ove_update')
 require ('Utils')
 require ('Constants')
 
+require ('Camera')
 require ('DataManager')
 require ('GameController')
 require ('MainMenu')

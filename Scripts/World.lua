@@ -19,6 +19,7 @@ function World:load_map(map_id)
 	self.current_map:begin_loading()
 	GameController.player:reset_position()
 	self.timer = 0
+	Camera.reset()
 end
 
 function World:update(dt)
@@ -31,6 +32,7 @@ function World:update(dt)
 	self:update_jam_collision()
 	
 	GameController.player:update_position(dt)
+	Camera.update(dt)
 end
 
 function World:keypress()
@@ -47,9 +49,11 @@ end
 
 function World:draw()
 	love.graphics.translate(self.current_map.origin.x, self.current_map.origin.y)
+	love.graphics.translate(Camera.x, Camera.y)
 	
 	self.current_map:draw()
 	
+	love.graphics.translate(-Camera.x, -Camera.y)
 	love.graphics.translate(-self.current_map.origin.x, -self.current_map.origin.y)
 end
 
