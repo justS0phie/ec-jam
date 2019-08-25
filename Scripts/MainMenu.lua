@@ -13,6 +13,7 @@ function MainMenu.new()
 		option = 1,
 		volume = 100*love.audio.getVolume(),
 		full_screen = mode.fullscreen,
+		timer = 0
 	}
 	
 	setmetatable(menu, MainMenu)
@@ -25,6 +26,10 @@ end
 function MainMenu:load_imgs()
 	self.images = {
 		select_img = love.graphics.newImage('Graphics/Misc/Selecao.png'),
+		volume_img = love.graphics.newImage('Graphics/Misc/Hourglass.png'),
+		zoey_name = love.graphics.newImage('Graphics/Misc/Zoey_name.png'),
+		zoey = love.graphics.newImage('Graphics/Misc/Zoey.png'),
+		jam_name = love.graphics.newImage('Graphics/Misc/Jam_name.png'),
 	}
 		
 	for _, menu in pairs(Constants.EnumMainSubmenu) do
