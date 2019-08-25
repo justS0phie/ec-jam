@@ -16,9 +16,14 @@ function Camera.update(dt)
 	local max_x = math.max(0, (Constants.MapUnitToPixelRatio*#map[1]) - 1280)
 	local max_y = math.max(0, (Constants.MapUnitToPixelRatio*#map) - 720)
 	
-	local dx = max_x*player_center_x/(Constants.MapUnitToPixelRatio*#map[1])
-	local dy = max_y*player_center_y/(Constants.MapUnitToPixelRatio*#map)
+	-- local dx = max_x*player_center_x/(Constants.MapUnitToPixelRatio*#map[1])
+	-- local dy = max_y*player_center_y/(Constants.MapUnitToPixelRatio*#map)
 	
-	Camera.x = -dx
-	Camera.y = -dy
+	if player_center_x > 600 and max_x > 0 then
+		Camera.x = -math.min(player_center_x-600, max_x)
+	end
+	
+	if player_center_y > 360 and max_y > 0 then
+		Camera.y = -math.min(player_center_y-360, max_y)
+	end
 end
