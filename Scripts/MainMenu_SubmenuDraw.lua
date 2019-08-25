@@ -18,15 +18,6 @@ function MainMenu:main_menu_draw()
 
 	View.draw(self.images.select_img, 650, 300 + 73*self.option)
 	
-	love.graphics.setColor(0,0,0)
-	
-	View.print("Begin", 750, 383)
-	View.print("Options", 750, 456)
-	View.print("Credits", 750, 529)
-	View.print("Exit", 750, 602)
-	
-	love.graphics.setColor(1,1,1)
-	
 	View.print("Begin", 750, 383)
 	View.print("Options", 750, 456)
 	View.print("Credits", 750, 529)
