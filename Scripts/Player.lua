@@ -291,7 +291,12 @@ function Player:check_collision_on_platform_vertical()
 end
 
 function Player:reset_position()
-	self.position = {x = 380, y = 280, x_speed = 0, y_speed = 0}
+	local start_position = GameController.world.current_map.start_position
+	self.position = {
+		x = start_position.x*Constants.MapUnitToPixelRatio, 
+		y = start_position.y*Constants.MapUnitToPixelRatio, 
+		x_speed = 0, y_speed = 0
+	}
 	self.stamina = 1
 	self.wall_grip = nil
 end
