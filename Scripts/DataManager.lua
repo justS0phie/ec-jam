@@ -1,45 +1,8 @@
 DataManager = {}
 DataManager.__index = DataManager
 
-function DataManager.save(character)
-	local MetaData = {}
+function DataManager.save(data)
 	
-	if GameController.world then
-		MetaData = {
-			id = GameController.world.area.active_map.id,
-			area = GameController.world.area.id,
-			pos_x = character.Pxgrid,
-			pos_y = character.Pygrid,
-		}
-	end
-	
-	if character.MetaData then
-		MetaData.ItemsGot = character.MetaData.ItemsGot
-	end
-	
-	local FileText = ""
-	FileText = FileText .. "return{\n"
-	FileText = FileText .. "gold = "..character.gold..",\n"
-	FileText = FileText .. "level = "..character.level..",\n"
-	FileText = FileText .. "gender = '"..character.gender.."',\n"
-	FileText = FileText .. "name = '"..character.name.."',\n"
-	if character.looks then
-		FileText = FileText .. "looks = {Hair = "..character.looks.Hair..",\n"
-		FileText = FileText .. "Face = "..character.looks.Face..",\n"
-		FileText = FileText .. "CTop = "..character.looks.CTop..",\n"
-		FileText = FileText .. "CBot = "..character.looks.CBot..",},\n"
-	end
-	FileText = FileText .. "Inventory = "..Utils.table_to_string(character.Inventory)..",\n"
-	FileText = FileText .. "MetaData = "..Utils.table_to_string(MetaData)..",\n"
-	FileText = FileText .. "ClearedEvents = "..Utils.table_to_string(character.ClearedEvents)..",\n"
-	FileText = FileText .. "SeenDialogs = "..Utils.table_to_string(character.SeenDialogs)..",\n"
-	FileText = FileText .. "Day = "..character.Day..",\n"
-	FileText = FileText .. "Time = "..Utils.table_to_string(character.Time)..",\n"
-	FileText = FileText .. "}"
-	
-	love.filesystem.write("Save00"..GameController.save_slot..".lua", FileText)
-	
-	DataManager.load_files()
 end
 
 function DataManager.load_files()
@@ -49,7 +12,7 @@ function DataManager.load_files()
 	for i=1,3 do
 	
 		GameController.menu.loaded_chars[i] = false
-		if (love.filesystem.exists("Save00"..i..".lua")) then
+		if (love.filesystem.getInfo("Save00"..i..".lua")) then
 			GameController.menu.loaded_chars[i] = love.filesystem.load("Save00"..i..".lua")()
 		end
 		
@@ -70,7 +33,7 @@ end
 
 function DataManager.load_user_data()
 	local user_data = nil
-	if (love.filesystem.exists("Userdata.lua")) then
+	if (love.filesystem.getInfo("Userdata.lua")) then
 		user_data = love.filesystem.load("Userdata.lua")()
 	else
 		user_data = {
