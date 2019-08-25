@@ -85,6 +85,18 @@ function World:update_objects(dt)
 		else
 			object.dy = math.sin(math.pi*((self.timer*10)%10))*10
 		end
+
+		if object.type == "disappearing_platform" then
+			local cycle_time = (object.finalTime - object.initialTime) / object.numberOfCycles
+			local visible_cycle_time = object.visibleTimePercentage * cycle_time
+			object_timer = self.timer % cycle_time
+
+			if self.timer < object.initialTime or self.timer > object.finalTime or object_timer > visible_cycle_time then
+				object.visible = false
+			else
+				object.visible = true
+			end
+		end
 		
 		if object.type == "mv_platform" then
 			local dx = object.position.x

@@ -25,7 +25,7 @@ end
 
 function Map:load_objects()
 	for _, object in ipairs(self.objects) do
-		if object.type == "mv_platform" then
+		if object.type == "mv_platform" or object.type == "disappearing_platform" then
 			object.position = {
 				x = object.initialPosition.x * Constants.MapUnitToPixelRatio,
 				y = object.initialPosition.y * Constants.MapUnitToPixelRatio
@@ -40,7 +40,7 @@ function Map:draw()
 	View.draw(self.image,0,0)
 	
 	for _, object in ipairs(self.objects) do		
-		if object.type == "mv_platform" then
+		if object.type == "mv_platform" or ( object.type == "disappearing_platform" and object.visible ) then
 			love.graphics.setColor(0,0,1)
 			love.graphics.rectangle("fill", object.position.x, object.position.y, object.width * Constants.MapUnitToPixelRatio, Constants.MapUnitToPixelRatio)
 			love.graphics.setColor(1,1,1)
