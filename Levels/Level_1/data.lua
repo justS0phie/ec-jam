@@ -35,5 +35,7 @@ return {
 		{type = "mv_platform", initialPosition = {x = 14, y = 15}, finalPosition = {x = 14, y = 29}, initialTime = 0, finalTime = 0.7, numberOfCycles = 2, width = 3},
 		{type = "disappearing_platform", initialPosition = {x = 8, y = 8}, initialTime = 0, finalTime = 1, numberOfCycles = 3, visibleTimePercentage = 0.5, width = 5},
 		{type = "jam", position = {x = 4, y = 4}}
-	}	
+	},
+	
+	start_position = {x=19, y=14}
 }
