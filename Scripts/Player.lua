@@ -16,22 +16,23 @@ function Player.new()
 		animation = 1,
 		jump_timer = 0,
 		animations = {
-			{1,2,3,4,1,2,3,4,3,2,1,2,3,4,1,2,3,4,1,2,3,4,3,2,1,2,3,4,1,2,3,4,1,2,3,4,3,2,1,2,3,4,1,2,3,4,1,2,3,4,3,2,1,2,3,4,
-			1,2,3,4,1,2,3,4,3,2,1,2,3,4,1,2,3,4,1,2,3,4,3,2,1,2,3,4,1,2,3,4,1,2,3,4,3,2,1,2,3,4,1,2,3,4,1,2,3,4,3,2,1,2,3,4,
-			1,2,3,4,1,2,3,4,3,2,1,2,3,4,1,2,3,4,1,2,3,4,3,2,1,2,3,4,5,6,7,8,9,10,11,12,11,10,9,8,7,6,5,4,3,2,1,2,3,4,1,2,3,4,
+			{1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8,7,6,5,4,3,4,5,6,4,3,2,1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8,7,6,5,4,3,4,5,6,4,3,2,
+			1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8,7,6,5,4,3,4,5,6,4,3,2,1,3,4,5,6,7,8,9,11,13,15,17,19,21,
+			23,23,21,19,17,15,13,11,9,8,7,6,5,4,3,2,1,2,3,4,5,6,7,8,7,6,5,4,3,2,
 			framerate = 0.3},
-			{6,7,8,9,10,11,12,13,14,15},
-			{16},
-			{17},
-			{18},
-			{19},
-			{20}
+			{36,37,38,39,40,41, framerate = 0.3},
+			{42},
+			{42},
+			{43},
+			{44},
+			{45},
+			{36},
 		},
 		invert_sprite = true
 	}
 		
-	for i = 1,20 do
-		player.sprite.quads[i] = love.graphics.newQuad(40*(i-1),0,40,40,1320,40)
+	for i = 1,45 do
+		player.sprite.quads[i] = love.graphics.newQuad(40*4/3*(i-1),0,40*4/3,40,2400,40)
 	end
 	
 	for i = 1,11 do
@@ -208,6 +209,8 @@ function Player:check_collision(dt)
 	if self.wall_grip and not self.on_floor then
 		if self.position.y_speed < 0 then
 			self.animation = 2
+		elseif self.position.y_speed >= 0 then
+			self.animation = 8
 		else
 			self.animation = 1
 		end
@@ -313,14 +316,14 @@ function Player:draw()
 	local total_width = self.width + 2*self.sprite_border
 	local x = self.position.x + total_width/2
 	local y = self.position.y + self.height/2
-	local s_x = 1
+	local s_x = -1
 	local current = self.animations[self.animation]
 	local framerate = current.framerate or 1
 	local frame = math.floor(self.animation_timer*framerate)%(#current) + 1
 	local rot = 0
 	
 	if self.invert_sprite then
-		s_x = -1
+		s_x = 1
 	end
 	
 	if self.wall_grip then
