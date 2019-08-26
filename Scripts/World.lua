@@ -1,14 +1,17 @@
 World = {}
 World.__index = World
 
-function World.new()	
+function World.new()
 	local world = {
 		images = {
 		},
 		timer = 0,
 		color_factor = 0,
+		music = love.audio.newSource("Sounds/Tune of Longing.mp3", "stream"),
+		music_volume = 0,
+		music_timer = 0,
 	}
-	
+		
 	setmetatable(world, World)
 	
 	return world
@@ -20,10 +23,23 @@ function World:load_map(map_id)
 	self.current_map:begin_loading()
 	GameController.player:reset_position()
 	self.timer = 0
+	self.music_timer = 0
+	self.music_volume = 0
+	self.music:stop()
+	self.music:seek(16.5)
+	self.music:play()
 	Camera.reset()
 end
 
 function World:update(dt)
+	self.music_timer = self.music_timer + dt
+	self.music_volume = math.min(1, self.music_volume + dt)
+	
+	self.music:setVolume(self.music_volume)
+	if self.music_timer > 48.5 then
+		self.music:seek(16.5)
+		self.music_timer = self.music_timer - 48.5
+	end
 	if GameController.player.rewind then
 		self:update_objects(-dt/5)
 	elseif GameController.player.forward then
