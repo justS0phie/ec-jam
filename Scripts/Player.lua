@@ -5,9 +5,9 @@ function Player.new()
 	local player = {
 		position = {x = 380, y = 280, x_speed = 0, y_speed = 0},
 		height = 40,
-		width = 30,
+		width = 20,
 		stamina = 1,
-		sprite_border = 5,
+		sprite_border = 10,
 		skills = {},
 		sprite = {image = love.graphics.newImage('Graphics/Character/Sprite.png'), quads = {}},
 		rewind_sprite = {image = love.graphics.newImage('Graphics/Character/Rewind.png'), quads = {}},

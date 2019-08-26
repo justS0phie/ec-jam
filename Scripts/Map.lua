@@ -49,8 +49,9 @@ function Map:draw()
 			love.graphics.rectangle("fill", object.position.x, object.position.y, object.width * Constants.MapUnitToPixelRatio, Constants.MapUnitToPixelRatio)
 			love.graphics.setColor(1,1,1)
 		elseif object.type == "jam" then
+			local rotation = math.sin(math.pi*(((0.7+GameController.world.timer)*50)))
 			love.graphics.setColor(1,0,0)
-			love.graphics.rectangle("fill", Constants.MapUnitToPixelRatio*object.position.x, Constants.MapUnitToPixelRatio*object.position.y + object.dy, Constants.MapUnitToPixelRatio * 2, Constants.MapUnitToPixelRatio * 2)
+			love.graphics.draw(World.jam, Constants.MapUnitToPixelRatio*object.position.x, Constants.MapUnitToPixelRatio*object.position.y + object.dy, rotation/7,1,1,20,20)
 			love.graphics.setColor(1,1,1)
 		end
 	end

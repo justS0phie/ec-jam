@@ -1,13 +1,16 @@
-World = {}
+World = {
+	jam = love.graphics.newImage("Graphics/Character/Jam.png"),
+	music = love.audio.newSource("Sounds/Tune of Longing.mp3", "stream")
+}
 World.__index = World
 
 function World.new()
 	local world = {
 		images = {
+			
 		},
 		timer = 0,
 		color_factor = 0,
-		music = love.audio.newSource("Sounds/Tune of Longing.mp3", "stream"),
 		music_volume = 0,
 		music_timer = 0,
 	}
@@ -25,9 +28,9 @@ function World:load_map(map_id)
 	self.timer = 0
 	self.music_timer = 0
 	self.music_volume = 0
-	self.music:stop()
-	self.music:seek(16.5)
-	self.music:play()
+	World.music:stop()
+	World.music:seek(16.5)
+	World.music:play()
 	Camera.reset()
 end
 
@@ -35,9 +38,9 @@ function World:update(dt)
 	self.music_timer = self.music_timer + dt
 	self.music_volume = math.min(1, self.music_volume + dt)
 	
-	self.music:setVolume(self.music_volume)
+	World.music:setVolume(self.music_volume)
 	if self.music_timer > 48.5 then
-		self.music:seek(16.5)
+		World.music:seek(16.5)
 		self.music_timer = self.music_timer - 48.5
 	end
 	if GameController.player.rewind then
