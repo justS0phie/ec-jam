@@ -20,9 +20,9 @@ function QueueManager.load_map(queue, index)
 	map.image = love.graphics.newCanvas(#map[1]*Constants.MapUnitToPixelRatio, #map*Constants.MapUnitToPixelRatio)
 	love.graphics.setCanvas(map.image)
 	
-	love.graphics.setColor(0.5,0.5,0.5)
+	love.graphics.setColor(0.3,0.8,0.9)
 	love.graphics.rectangle("fill", 0, 0, #map[1]*20, #map*20)
-	love.graphics.setColor(1,1,1)
+	love.graphics.setColor(0,1,0.5)
 	for y, row in ipairs(map) do
 		for x, cell in ipairs(row) do
 			if cell == 1 then

@@ -21,6 +21,9 @@ require ('QueueManager')
 require ('View')
 require ('World')
 
+Shaders = {}
+require ('Shader Grayscale')
+
 MyLib.MyLibSetup()
 
 DataManager.load_user_data()

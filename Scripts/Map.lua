@@ -37,6 +37,9 @@ function Map:load_objects()
 end
 
 function Map:draw()
+
+	love.graphics.setShader(Shaders.grayscale)
+	Shaders.grayscale:send("factor", 1-GameController.world.color_factor)
 	
 	View.draw(self.image,0,0)
 	
@@ -51,6 +54,8 @@ function Map:draw()
 			love.graphics.setColor(1,1,1)
 		end
 	end
+	
+	love.graphics.setShader()
 	
 	GameController.player:draw()
 end

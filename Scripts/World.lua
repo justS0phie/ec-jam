@@ -5,7 +5,8 @@ function World.new()
 	local world = {
 		images = {
 		},
-		timer = 0
+		timer = 0,
+		color_factor = 0,
 	}
 	
 	setmetatable(world, World)
@@ -33,6 +34,18 @@ function World:update(dt)
 	
 	GameController.player:update_position(dt)
 	Camera.update(dt)
+	
+	if GameController.player.rewind then
+		GameController.player.rewind_alpha = math.min(1,GameController.player.rewind_alpha + 5*dt)
+	else
+		GameController.player.rewind_alpha = math.max(0,GameController.player.rewind_alpha - 5*dt)
+	end
+	
+	if GameController.player.forward then
+		self.color_factor = math.min(1,self.color_factor + 5*dt)
+	else
+		self.color_factor = math.max(0,self.color_factor - 5*dt)
+	end
 end
 
 function World:keypress()
@@ -55,6 +68,12 @@ function World:draw()
 	
 	love.graphics.translate(-Camera.x, -Camera.y)
 	love.graphics.translate(-self.current_map.origin.x, -self.current_map.origin.y)
+	
+	if GameController.player.rewind_alpha > 0 then
+		love.graphics.setColor(1,1,1,GameController.player.rewind_alpha)
+		local frame = math.floor(GameController.player.animation_timer)%6 + 1
+		love.graphics.draw(GameController.player.rewind_sprite.image, GameController.player.rewind_sprite.quads[frame],0,0,0,2.64,2)
+	end
 end
 
 function World:update_jam_collision()

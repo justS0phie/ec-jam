@@ -10,12 +10,16 @@ function Player.new()
 		sprite_border = 5,
 		skills = {},
 		sprite = {image = love.graphics.newImage('Graphics/Character/Sprite.png'), quads = {}},
-		dialog_sprite = love.graphics.newImage('Graphics/Character/Dialog.png'),
+		rewind_sprite = {image = love.graphics.newImage('Graphics/Character/Rewind.png'), quads = {}},
+		rewind_alpha = 0,
 		animation_timer = 0,
 		animation = 1,
 		jump_timer = 0,
 		animations = {
-			{1,2,3,4,5, framerate=0.1},
+			{1,2,3,4,1,2,3,4,3,2,1,2,3,4,1,2,3,4,1,2,3,4,3,2,1,2,3,4,1,2,3,4,1,2,3,4,3,2,1,2,3,4,1,2,3,4,1,2,3,4,3,2,1,2,3,4,
+			1,2,3,4,1,2,3,4,3,2,1,2,3,4,1,2,3,4,1,2,3,4,3,2,1,2,3,4,1,2,3,4,1,2,3,4,3,2,1,2,3,4,1,2,3,4,1,2,3,4,3,2,1,2,3,4,
+			1,2,3,4,1,2,3,4,3,2,1,2,3,4,1,2,3,4,1,2,3,4,3,2,1,2,3,4,5,6,7,8,9,10,11,12,11,10,9,8,7,6,5,4,3,2,1,2,3,4,1,2,3,4,
+			framerate = 0.3},
 			{6,7,8,9,10,11,12,13,14,15},
 			{16},
 			{17},
@@ -27,7 +31,11 @@ function Player.new()
 	}
 		
 	for i = 1,20 do
-		player.sprite.quads[i] = love.graphics.newQuad(40*(i-1),0,40,40,800,80)
+		player.sprite.quads[i] = love.graphics.newQuad(40*(i-1),0,40,40,1320,40)
+	end
+	
+	for i = 1,11 do
+		player.rewind_sprite.quads[i] = love.graphics.newQuad(486*(i-1),0,486,360,5346,360)
 	end
 		
 	setmetatable(player, Player)
