@@ -15,23 +15,13 @@ function QueueManager.load()
 end
 
 function QueueManager.load_map(queue, index)
-	--GameController.world.current_map.image = love.graphics.newImage("Levels/Level_"..queue.map_id.."/Image.png")
 	local map = GameController.world.current_map
+		
 	map.image = love.graphics.newCanvas(#map[1]*Constants.MapUnitToPixelRatio, #map*Constants.MapUnitToPixelRatio)
-	love.graphics.setCanvas(map.image)
+	map:generate_map()
 	
-	love.graphics.setColor(0.3,0.8,0.9)
-	love.graphics.rectangle("fill", 0, 0, #map[1]*20, #map*20)
-	love.graphics.setColor(0,1,0.5)
-	for y, row in ipairs(map) do
-		for x, cell in ipairs(row) do
-			if cell == 1 then
-				love.graphics.rectangle("fill", 20*(x-1), 20*(y-1), 20, 20)
-			elseif cell == 2 then
-				love.graphics.line(20*(x-1), 20*(y-1), 20*x, 20*(y-1))
-			end
-		end
-	end
-	love.graphics.setCanvas()
+	map.obj_tile = love.graphics.newImage("Levels/Level_"..GameController.level_no.."/Floor.png")
+	pcall(function() map.obj_tile = love.graphics.newImage("Levels/Level_"..GameController.level_no.."/Obj.png") end)
+	
 	table.remove(QueueManager.queues, index)
 end

@@ -37,7 +37,6 @@ function Map:load_objects()
 end
 
 function Map:draw()
-
 	love.graphics.setShader(Shaders.grayscale)
 	Shaders.grayscale:send("factor", 1-GameController.world.color_factor)
 	
@@ -45,18 +44,84 @@ function Map:draw()
 	
 	for _, object in ipairs(self.objects) do		
 		if object.type == "mv_platform" or ( object.type == "disappearing_platform" and object.visible ) then
-			love.graphics.setColor(0,0,1)
-			love.graphics.rectangle("fill", object.position.x, object.position.y, object.width * Constants.MapUnitToPixelRatio, Constants.MapUnitToPixelRatio)
-			love.graphics.setColor(1,1,1)
+			for i=1, object.width do
+				love.graphics.draw(self.obj_tile, object.position.x + (i-1)*Constants.MapUnitToPixelRatio, object.position.y)
+			end
 		elseif object.type == "jam" then
 			local rotation = math.sin(math.pi*(((0.7+GameController.world.timer)*50)))
-			love.graphics.setColor(1,0,0)
 			love.graphics.draw(World.jam, Constants.MapUnitToPixelRatio*object.position.x, Constants.MapUnitToPixelRatio*object.position.y + object.dy, rotation/7,1,1,20,20)
-			love.graphics.setColor(1,1,1)
 		end
 	end
 	
 	love.graphics.setShader()
 	
+	love.graphics.setColor(1,1,1)
 	GameController.player:draw()
+end
+
+function Map.draw_bg(canvas, w, h, sprite)
+	love.graphics.setCanvas(canvas)
+	local x_offset = 0
+	local y_offset = 0
+	
+	while y_offset < h do
+		while x_offset < w do
+			View.draw(sprite, x_offset, y_offset)
+			x_offset = x_offset + 512
+		end
+		y_offset = y_offset + 512
+		x_offset = 0
+	end
+	love.graphics.setCanvas()
+end
+
+function Map:wall_matrix()
+	for i=1,#self do
+		for j=1,#self[i] do
+			if self[i][j] == 1 then
+				View.rectangle("fill", Constants.MapUnitToPixelRatio*(j-1), Constants.MapUnitToPixelRatio*(i-1), Constants.MapUnitToPixelRatio, Constants.MapUnitToPixelRatio)
+			end
+		end
+	end
+end
+
+function Map:generate_map()
+	local w,h = #self[1]*Constants.MapUnitToPixelRatio,#self*Constants.MapUnitToPixelRatio
+	local bg = love.graphics.newCanvas(w,h)
+	local fg_canvas = love.graphics.newCanvas(w,h)
+	local fg = love.graphics.newCanvas(w,h)
+	
+	local bg_img = love.graphics.newImage("Levels/Level_"..GameController.level_no.."/BG.png")
+	local fg_img = love.graphics.newImage("Levels/Level_"..GameController.level_no.."/FG.png")
+	local tile_img = love.graphics.newImage("Levels/Level_"..GameController.level_no.."/Floor.png")
+		
+	Map.draw_bg(bg, w, h, bg_img)
+	
+	love.graphics.setCanvas(fg_canvas)
+	self:wall_matrix()
+	
+	love.graphics.setBlendMode("multiply", "premultiplied")
+	Map.draw_bg(fg_canvas, w, h, fg_img)
+	
+	love.graphics.setCanvas(fg)
+	love.graphics.setBlendMode("alpha")
+	View.draw(fg_canvas, 0, 0)
+	
+	love.graphics.setCanvas(self.image)
+	
+	View.draw(bg,0,0)
+	View.draw(fg,0,0)
+	
+	for i=2,#self do
+		for j=1,#self[i] do
+			if self[i][j] == 1 and self[i-1][j] ~= 1 then
+				View.draw(tile_img, Constants.MapUnitToPixelRatio*(j-1), Constants.MapUnitToPixelRatio*(i-1.5))
+			end
+			if self[i][j] == 2 then
+				View.draw(tile_img, Constants.MapUnitToPixelRatio*(j-1), Constants.MapUnitToPixelRatio*(i-1.5))
+			end
+		end
+	end
+	
+	love.graphics.setCanvas()
 end
