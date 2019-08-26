@@ -20,8 +20,5 @@ function QueueManager.load_map(queue, index)
 	map.image = love.graphics.newCanvas(#map[1]*Constants.MapUnitToPixelRatio, #map*Constants.MapUnitToPixelRatio)
 	map:generate_map()
 	
-	map.obj_tile = love.graphics.newImage("Levels/Level_"..GameController.level_no.."/Floor.png")
-	pcall(function() map.obj_tile = love.graphics.newImage("Levels/Level_"..GameController.level_no.."/Obj.png") end)
-	
 	table.remove(QueueManager.queues, index)
 end

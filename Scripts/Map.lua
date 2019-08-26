@@ -16,6 +16,9 @@ function Map.load(map_id)
 	
 	GameController.level_no = map_id
 	
+	pcall(function() map.obj_tile = love.graphics.newImage("Levels/Level_"..GameController.level_no.."/Obj.png") end)
+	if not map.obj_tile then map.obj_tile = love.graphics.newImage("Levels/Level_"..GameController.level_no.."/Floor.png") end
+	
 	return map
 end
 

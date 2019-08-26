@@ -80,18 +80,20 @@ function World:keypress()
 end
 
 function World:draw()
-	love.graphics.translate(self.current_map.origin.x, self.current_map.origin.y)
-	love.graphics.translate(Camera.x, Camera.y)
-	
-	self.current_map:draw()
-	
-	love.graphics.translate(-Camera.x, -Camera.y)
-	love.graphics.translate(-self.current_map.origin.x, -self.current_map.origin.y)
-	
-	if GameController.player.rewind_alpha > 0 then
-		love.graphics.setColor(1,1,1,GameController.player.rewind_alpha)
-		local frame = math.floor(GameController.player.animation_timer)%6 + 1
-		love.graphics.draw(GameController.player.rewind_sprite.image, GameController.player.rewind_sprite.quads[frame],0,0,0,2.64,2)
+	if not QueueManager.is_loading then
+		love.graphics.translate(self.current_map.origin.x, self.current_map.origin.y)
+		love.graphics.translate(Camera.x, Camera.y)
+		
+		self.current_map:draw()
+		
+		love.graphics.translate(-Camera.x, -Camera.y)
+		love.graphics.translate(-self.current_map.origin.x, -self.current_map.origin.y)
+		
+		if GameController.player.rewind_alpha > 0 then
+			love.graphics.setColor(1,1,1,GameController.player.rewind_alpha)
+			local frame = math.floor(GameController.player.animation_timer)%6 + 1
+			love.graphics.draw(GameController.player.rewind_sprite.image, GameController.player.rewind_sprite.quads[frame],0,0,0,2.64,2)
+		end
 	end
 end
 
