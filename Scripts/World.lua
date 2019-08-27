@@ -29,15 +29,21 @@ function World:load_map(map_id)
 	self.music_timer = 0
 	self.music_volume = 0
 	self.music_pitch = 1
+	self.tutorial_timer = 5
+	self.tutorial = ""
 	World.music:stop()
 	World.music:setVolume(0)
 	World.music:seek(16.5)
 	World.music:play()
 	Camera.reset()
+	
+	if map_id == 1 then self.tutorial = "WASD to move" end
+	if map_id == 2 then self.tutorial = "Left and Right keys to control the passage of time" end
 end
 
 function World:update(dt)
 	self.music_volume = math.max(0, self.music_volume - dt)
+	self.tutorial_timer = math.max(0, self.tutorial_timer - dt)
 	self.music_timer = self.music_timer + dt
 	
 	if not (GameController.player.rewind or GameController.player.forward or GameController.level_no == 1) then
@@ -84,12 +90,12 @@ function World:update(dt)
 	end
 end
 
-function World:keypress()
+function World:keypress(key)
 	if MyLib.key_list.escape then
 		MyLib.FadeToColor(0.3,{"LuaCall>GameController.go_to_main_menu()"},{},"fill",{0,0,0,1},true)
 	else
 		if GameController.state == Constants.EnumGameState.IN_GAME then
-			if MyLib.key_list.up then GameController.player.jump_timer = 1/12 end
+			if key == "w" then GameController.player.jump_timer = 1/12 end
 		else
 			GameController.state = Constants.EnumGameState.IN_GAME
 		end
@@ -110,6 +116,18 @@ function World:draw()
 			love.graphics.setColor(1,1,1,GameController.player.rewind_alpha)
 			local frame = math.floor(GameController.player.animation_timer)%6 + 1
 			love.graphics.draw(GameController.player.rewind_sprite.image, GameController.player.rewind_sprite.quads[frame],0,0,0,2.64,2)
+		end
+		
+		if self.tutorial_timer > 0 and self.tutorial ~= "" then
+			local alpha = 1
+			if self.tutorial_timer > 4 then alpha = math.abs(self.tutorial_timer - 5) end
+			if self.tutorial_timer < 1 then alpha = self.tutorial_timer end
+			
+			love.graphics.setColor(0,0,0,alpha)
+						
+			love.graphics.printf(self.tutorial,0,380,1280,"center")
+			
+			love.graphics.setColor(1,1,1)
 		end
 	end
 end
