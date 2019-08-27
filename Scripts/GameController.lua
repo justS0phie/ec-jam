@@ -16,7 +16,7 @@ function GameController.start_new_game()
 	GameController.state = Constants.EnumGameState.IN_GAME
 	GameController.world = World.new()
 	GameController.player = Player.new()
-	GameController.world:load_map(2)
+	GameController.world:load_map(1)
 end
 
 function GameController.next_level()
