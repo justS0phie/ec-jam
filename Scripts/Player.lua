@@ -242,7 +242,7 @@ function Player:check_controls(dt)
 	GameController.player.forward = nil
 	GameController.player.rewind = nil
 	
-	if love.keyboard.isDown('right') and GameController.world.timer < 1 then
+	if (love.keyboard.isDown('right') and GameController.world.timer < 1) or GameController.level_no == 1 then
 		GameController.player.forward = true
 	elseif love.keyboard.isDown('left') and GameController.world.timer > 0 then
 		GameController.player.rewind = true
@@ -332,10 +332,12 @@ function Player:draw()
 	
 	View.draw(self.sprite.image,self.sprite.quads[current[frame]],x,y,rot,s_x,1, total_width/2, self.height/2)
 
-	local alpha = GameController.world.color_factor + self.rewind_alpha
-	love.graphics.setColor(0.7,0.1,0.8, alpha)
-	love.graphics.circle("line",x,y,25)
-	love.graphics.setColor(1-GameController.world.timer,0,GameController.world.timer, alpha)
-	love.graphics.line(x,y, x+25*math.sin(2*GameController.world.timer*math.pi), y-25*math.cos(2*GameController.world.timer*math.pi))
-	love.graphics.setColor(1,1,1,1)
+	if GameController.level_no > 1 then
+		local alpha = GameController.world.color_factor + self.rewind_alpha
+		love.graphics.setColor(0.7,0.1,0.8, alpha)
+		love.graphics.circle("line",x,y,25)
+		love.graphics.setColor(1-GameController.world.timer,0,GameController.world.timer, alpha)
+		love.graphics.line(x,y, x+25*math.sin(2*GameController.world.timer*math.pi), y-25*math.cos(2*GameController.world.timer*math.pi))
+		love.graphics.setColor(1,1,1,1)
+	end
 end

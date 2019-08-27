@@ -28,6 +28,7 @@ function World:load_map(map_id)
 	self.timer = 0
 	self.music_timer = 0
 	self.music_volume = 0
+	self.music_pitch = 1
 	World.music:stop()
 	World.music:seek(16.5)
 	World.music:play()
@@ -35,18 +36,33 @@ function World:load_map(map_id)
 end
 
 function World:update(dt)
+	self.music_volume = math.max(0, self.music_volume - dt)
 	self.music_timer = self.music_timer + dt
-	self.music_volume = math.min(1, self.music_volume + dt)
+	
+	if not (GameController.player.rewind or GameController.player.forward or GameController.level_no == 1) then
+		self.music_volume = math.max(0, self.music_volume - 2*dt)
+	end
+	
+	if GameController.player.forward or GameController.level_no == 1 then
+		self:update_objects(dt/5)
+		self.music_volume = math.min(1, self.music_volume + 2*dt)
+	elseif GameController.player.rewind then
+		self.music_volume = math.min(1, self.music_volume + 2*dt)
+		self:update_objects(-dt/5)
+		self.music_pitch = 5
+		self.music:setPitch(self.music_pitch)
+	end
+	
+	if not GameController.player.rewind and self.music_pitch == 5 then
+		self.music_pitch = 1
+		self.music:setPitch(self.music_pitch)
+		World.music:seek(16.5 + self.music_timer)
+	end
 	
 	World.music:setVolume(self.music_volume)
 	if self.music_timer > 48.5 then
 		World.music:seek(16.5)
 		self.music_timer = self.music_timer - 48.5
-	end
-	if GameController.player.rewind then
-		self:update_objects(-dt/5)
-	elseif GameController.player.forward then
-		self:update_objects(dt/5)
 	end
 	
 	self:update_jam_collision()
@@ -60,7 +76,7 @@ function World:update(dt)
 		GameController.player.rewind_alpha = math.max(0,GameController.player.rewind_alpha - 5*dt)
 	end
 	
-	if GameController.player.forward then
+	if GameController.player.forward or level_no == 1 then
 		self.color_factor = math.min(1,self.color_factor + 5*dt)
 	else
 		self.color_factor = math.max(0,self.color_factor - 5*dt)
@@ -115,8 +131,12 @@ function World:update_jam_collision()
 end
 
 function World:update_objects(dt)
-	self.timer = math.max(self.timer + dt, 0)
-	self.timer = math.min(self.timer, 1)
+	if GameController.level_no == 1 then
+		self.timer = (self.timer + dt)%1
+	else
+		self.timer = math.max(self.timer + dt, 0)
+		self.timer = math.min(self.timer, 1)
+	end
 	local object_timer
 	
 	for index, object in ipairs(self.current_map.objects) do
