@@ -16,9 +16,14 @@ function GameController.start_new_game()
 	GameController.state = Constants.EnumGameState.IN_GAME
 	GameController.world = World.new()
 	GameController.player = Player.new()
-	GameController.world:load_map(1)
+	GameController.world:load_map(2)
 end
 
 function GameController.next_level()
-	GameController.world:load_map(GameController.level_no + 1)
+	success, _ = pcall(function() GameController.world:load_map(GameController.level_no + 1) end)
+	
+	if not success then
+		GameController.world.music:stop()
+		GameController.go_to_main_menu()
+	end
 end

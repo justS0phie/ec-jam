@@ -30,6 +30,7 @@ function World:load_map(map_id)
 	self.music_volume = 0
 	self.music_pitch = 1
 	World.music:stop()
+	World.music:setVolume(0)
 	World.music:seek(16.5)
 	World.music:play()
 	Camera.reset()

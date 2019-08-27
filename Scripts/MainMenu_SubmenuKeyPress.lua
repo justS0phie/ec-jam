@@ -42,7 +42,7 @@ function MainMenu:main_menu_keypress()
 		if self.option == 4 then
 			love.event.push('quit')
 		elseif self.option == 1 then
-			MyLib.FadeToColor(0.3,{"LuaCall>GameController.start_new_game()"},{},"fill",{0,0,0,1},true)
+			MyLib.FadeToColor(0.3,{"LuaCall>GameController.menu.music:stop() GameController.start_new_game()"},{},"fill",{0,0,0,1},true)
 		else
 			self:fade_to_submenu(self.option)
 		end

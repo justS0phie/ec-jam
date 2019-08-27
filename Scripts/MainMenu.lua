@@ -13,11 +13,15 @@ function MainMenu.new()
 		option = 1,
 		volume = 100*love.audio.getVolume(),
 		full_screen = mode.fullscreen,
-		timer = 0
+		timer = 0,
+		music = love.audio.newSource("Sounds/Menu.mp3", "stream"),
 	}
 	
 	setmetatable(menu, MainMenu)
 	menu:load_imgs()
+	
+	menu.music:setLooping(true)
+	menu.music:play()
 	
 	return menu
 end
